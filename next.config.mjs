@@ -4,6 +4,7 @@ const mode = process.env.BUILD_MODE ?? "standalone";
 console.log("[Next] build mode", mode);
 
 const disableChunk = !!process.env.DISABLE_CHUNK || mode === "export";
+const disableWebpackCache = process.env.DISABLE_WEBPACK_CACHE === "1";
 console.log("[Next] build with chunk: ", !disableChunk);
 
 /** @type {import('next').NextConfig} */
@@ -13,6 +14,11 @@ const nextConfig = {
       test: /\.svg$/,
       use: ["@svgr/webpack"],
     });
+
+    if (disableWebpackCache) {
+      config.cache = false;
+      console.log("[Next] webpack cache disabled");
+    }
 
     if (disableChunk) {
       config.plugins.push(
