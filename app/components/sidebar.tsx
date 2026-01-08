@@ -4,7 +4,6 @@ import styles from "./home.module.scss";
 
 import { IconButton } from "./button";
 import SettingsIcon from "../icons/settings.svg";
-import ChatGptIcon from "../icons/chatgpt.svg";
 import AddIcon from "../icons/add.svg";
 import DeleteIcon from "../icons/delete.svg";
 import McpIcon from "../icons/mcp.svg";
@@ -323,11 +322,14 @@ export function SideBar(props: { className?: string }) {
       <SideBarHeader
         title="Digital Yu"
         subTitle={undefined}
-        logo={<ChatGptIcon />}
+        logo={null}
         shouldNarrow={shouldNarrow}
       >
         {!shouldNarrow && (
           <div className={styles["sidebar-participant"]}>
+            <div className={styles["sidebar-participant-tip"]}>
+              {Locale.Sidebar.ParticipantTip}
+            </div>
             <div className={styles["sidebar-participant-row"]}>
               <input
                 className={styles["sidebar-participant-input"]}

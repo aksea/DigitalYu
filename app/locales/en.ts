@@ -684,6 +684,7 @@ const en: LocaleType = {
   Sidebar: {
     ParticipantLabel: "Participant: ",
     ParticipantEmpty: "Name not set",
+    ParticipantTip: "Please enter your name below (for experiment use only)",
   },
   FineTuned: {
     Sysmessage: "You are an assistant that",

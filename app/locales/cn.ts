@@ -667,6 +667,7 @@ const cn = {
   Sidebar: {
     ParticipantLabel: "受试者：",
     ParticipantEmpty: "未登记姓名",
+    ParticipantTip: "请在下方输入姓名（仅实验用途）",
   },
   FineTuned: {
     Sysmessage: "你是一个助手",
