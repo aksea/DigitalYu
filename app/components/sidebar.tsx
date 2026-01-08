@@ -26,11 +26,12 @@ import {
 import { useNavigate } from "react-router-dom";
 import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
-import { showConfirm } from "./ui-lib";
+import { showConfirm, showToast } from "./ui-lib";
 import clsx from "clsx";
 import { isMcpEnabled } from "../mcp/actions";
 import { useParticipantStore } from "../store/participant";
 import { useSyncStore } from "../store/sync";
+import ConfirmIcon from "../icons/confirm.svg";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
@@ -283,10 +284,14 @@ export function SideBar(props: { className?: string }) {
   const navigate = useNavigate();
   const chatStore = useChatStore();
   const syncStore = useSyncStore();
-  const participantName = useParticipantStore((state) => state.name.trim());
+  const participantStore = useParticipantStore();
+  const participantName = participantStore.name.trim();
   const participantLabel = participantName.length
     ? `${Locale.Sidebar.ParticipantLabel}${participantName}`
     : Locale.Sidebar.ParticipantEmpty;
+  const [participantDraft, setParticipantDraft] = useState(
+    participantStore.name,
+  );
   const [mcpEnabled, setMcpEnabled] = useState(false);
 
   useEffect(() => {
@@ -298,6 +303,20 @@ export function SideBar(props: { className?: string }) {
     };
     checkMcpStatus();
   }, []);
+
+  useEffect(() => {
+    setParticipantDraft(participantStore.name);
+  }, [participantStore.name]);
+
+  const registerParticipant = () => {
+    const trimmed = participantDraft.trim();
+    if (!trimmed) {
+      showToast(Locale.Chat.InputNameRequired);
+      return;
+    }
+    participantStore.setName(trimmed);
+    showToast(Locale.Chat.RegisterSuccess);
+  };
 
   return (
     <SideBarContainer
@@ -335,6 +354,27 @@ export function SideBar(props: { className?: string }) {
           />
         </div>
       </SideBarHeader>
+      {!shouldNarrow && (
+        <div className={styles["sidebar-participant"]}>
+          <div className={styles["sidebar-participant-label"]}>
+            {Locale.Settings.ParticipantName.Title}
+          </div>
+          <div className={styles["sidebar-participant-row"]}>
+            <input
+              className={styles["sidebar-participant-input"]}
+              value={participantDraft}
+              placeholder={Locale.Settings.ParticipantName.Placeholder}
+              onChange={(e) => setParticipantDraft(e.currentTarget.value)}
+            />
+            <IconButton
+              icon={<ConfirmIcon />}
+              text={Locale.Chat.Register}
+              onClick={registerParticipant}
+              bordered
+            />
+          </div>
+        </div>
+      )}
       <SideBarBody
         onClick={(e) => {
           if (e.target === e.currentTarget) {

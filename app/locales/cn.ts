@@ -83,8 +83,8 @@ const cn = {
       }
       return inputHints + "，/ 触发补全，: 触发命令";
     },
-    InputNamePlaceholder: "请输入姓名",
-    InputNameRequired: "请输入姓名",
+    InputNamePlaceholder: "请登记姓名（仅用于实验用途）",
+    InputNameRequired: "请先登记姓名",
     Register: "登记",
     RegisterSuccess: "登记成功",
     Send: "发送",

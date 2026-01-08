@@ -92,8 +92,8 @@ const en: LocaleType = {
       }
       return inputHints + ", / to search prompts, : to use commands";
     },
-    InputNamePlaceholder: "Enter your name",
-    InputNameRequired: "Please enter your name",
+    InputNamePlaceholder: "Please register your name (for experiment use only)",
+    InputNameRequired: "Please register your name",
     Register: "Register",
     RegisterSuccess: "Registered successfully",
     Send: "Send",

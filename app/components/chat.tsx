@@ -876,7 +876,6 @@ function _Chat() {
   const fontSize = config.fontSize;
   const fontFamily = config.fontFamily;
   const participantName = useParticipantStore((state) => state.name);
-  const setParticipantName = useParticipantStore((state) => state.setName);
   const hasParticipantName = participantName.trim().length > 0;
 
   const [showExport, setShowExport] = useState(false);
@@ -960,16 +959,7 @@ function _Chat() {
 
   const doSubmit = (userInput: string) => {
     if (!hasParticipantName) {
-      const name = userInput.trim();
-      if (!name) {
-        showToast(Locale.Chat.InputNameRequired);
-        return;
-      }
-      setParticipantName(name);
-      showToast(Locale.Chat.RegisterSuccess);
-      setUserInput("");
-      setAttachImages([]);
-      if (!isMobileScreen) inputRef.current?.focus();
+      showToast(Locale.Chat.InputNameRequired);
       return;
     }
     if (userInput.trim() === "" && isEmpty(attachImages)) return;
@@ -1037,6 +1027,11 @@ function _Chat() {
       return;
     }
     if (shouldSubmit(e)) {
+      if (!hasParticipantName) {
+        showToast(Locale.Chat.InputNameRequired);
+        e.preventDefault();
+        return;
+      }
       doSubmit(userInput);
       e.preventDefault();
     }
@@ -2002,12 +1997,11 @@ function _Chat() {
                 )}
                 <IconButton
                   icon={<SendWhiteIcon />}
-                  text={
-                    hasParticipantName ? Locale.Chat.Send : Locale.Chat.Register
-                  }
+                  text={Locale.Chat.Send}
                   className={styles["chat-input-send"]}
                   type="primary"
                   onClick={() => doSubmit(userInput)}
+                  disabled={!hasParticipantName}
                 />
               </label>
             </div>
