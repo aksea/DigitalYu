@@ -344,11 +344,10 @@ export function stream(
             extraInfo = prettyObject(resJson);
           } catch {}
 
-          if (res.status === 401) {
+          const isUnauthorized = res.status === 401;
+          if (isUnauthorized) {
             responseTexts.push(Locale.Error.Unauthorized);
-          }
-
-          if (extraInfo) {
+          } else if (extraInfo) {
             responseTexts.push(extraInfo);
           }
 
@@ -570,11 +569,10 @@ export function streamWithThink(
             extraInfo = prettyObject(resJson);
           } catch {}
 
-          if (res.status === 401) {
+          const isUnauthorized = res.status === 401;
+          if (isUnauthorized) {
             responseTexts.push(Locale.Error.Unauthorized);
-          }
-
-          if (extraInfo) {
+          } else if (extraInfo) {
             responseTexts.push(extraInfo);
           }
 

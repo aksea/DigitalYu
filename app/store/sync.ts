@@ -1,16 +1,11 @@
 import { getClientConfig } from "../config/client";
 import { ApiPath, STORAGE_KEY, StoreKey } from "../constant";
 import { createPersistStore } from "../utils/store";
-import {
-  AppState,
-  GetStoreState,
-  mergeAppState,
-  setLocalAppState,
-} from "../utils/sync";
-import { downloadAs, getMessageTextContent, readFromFile } from "../utils";
+import { GetStoreState } from "../utils/sync";
+import { downloadAs, getMessageTextContent } from "../utils";
 import { showToast } from "../components/ui-lib";
 import Locale from "../locales";
-import { createSyncClient, ProviderType } from "../utils/cloud";
+import { ProviderType } from "../utils/cloud";
 import { useChatStore } from "./chat";
 import { useParticipantStore } from "./participant";
 
@@ -22,12 +17,6 @@ type ExportedQA = {
     comment: string;
   };
 };
-
-export interface WebDavConfig {
-  server: string;
-  username: string;
-  password: string;
-}
 
 const isApp = !!getClientConfig()?.isApp;
 export type SyncStore = GetStoreState<typeof useSyncStore>;
@@ -55,16 +44,7 @@ const DEFAULT_SYNC_STATE = {
 
 export const useSyncStore = createPersistStore(
   DEFAULT_SYNC_STATE,
-  (set, get) => ({
-    cloudSync() {
-      const config = get()[get().provider];
-      return Object.values(config).every((c) => c.toString().length > 0);
-    },
-
-    markSyncTime() {
-      set({ lastSyncTime: Date.now(), lastProvider: get().provider });
-    },
-
+  (set, _get) => ({
     export() {
       const participantName = useParticipantStore.getState().name.trim();
       const { sessions } = useChatStore.getState();
@@ -123,63 +103,8 @@ export const useSyncStore = createPersistStore(
       if (exportCount === 0) {
         showToast(Locale.SearchChat.Page.NoData);
       }
-    },
 
-    async import() {
-      const rawContent = await readFromFile();
-
-      try {
-        const remoteState = JSON.parse(rawContent) as AppState;
-        const localState = getLocalAppState();
-        mergeAppState(localState, remoteState);
-        setLocalAppState(localState);
-        location.reload();
-      } catch (e) {
-        console.error("[Import]", e);
-        showToast(Locale.Settings.Sync.ImportFailed);
-      }
-    },
-
-    getClient() {
-      const provider = get().provider;
-      const client = createSyncClient(provider, get());
-      return client;
-    },
-
-    async sync() {
-      const localState = getLocalAppState();
-      const provider = get().provider;
-      const config = get()[provider];
-      const client = this.getClient();
-
-      try {
-        const remoteState = await client.get(config.username);
-        if (!remoteState || remoteState === "") {
-          await client.set(config.username, JSON.stringify(localState));
-          console.log(
-            "[Sync] Remote state is empty, using local state instead.",
-          );
-          return;
-        } else {
-          const parsedRemoteState = JSON.parse(
-            await client.get(config.username),
-          ) as AppState;
-          mergeAppState(localState, parsedRemoteState);
-          setLocalAppState(localState);
-        }
-      } catch (e) {
-        console.log("[Sync] failed to get remote state", e);
-        throw e;
-      }
-
-      await client.set(config.username, JSON.stringify(localState));
-
-      this.markSyncTime();
-    },
-
-    async check() {
-      const client = this.getClient();
-      return await client.check();
+      set({ lastSyncTime: Date.now(), lastProvider: "export" });
     },
   }),
   {

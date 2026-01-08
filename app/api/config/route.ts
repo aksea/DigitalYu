@@ -15,6 +15,24 @@ const DANGER_CONFIG = {
   customModels: serverConfig.customModels,
   defaultModel: serverConfig.defaultModel,
   visionModels: serverConfig.visionModels,
+  serverProviderStatus: {
+    openai: !!serverConfig.apiKey,
+    azure: !!serverConfig.azureApiKey && !!serverConfig.azureUrl,
+    google: !!serverConfig.googleApiKey,
+    anthropic: !!serverConfig.anthropicApiKey,
+    baidu: !!serverConfig.baiduApiKey && !!serverConfig.baiduSecretKey,
+    bytedance: !!serverConfig.bytedanceApiKey,
+    alibaba: !!serverConfig.alibabaApiKey,
+    tencent: !!serverConfig.tencentSecretId && !!serverConfig.tencentSecretKey,
+    moonshot: !!serverConfig.moonshotApiKey,
+    iflytek: !!serverConfig.iflytekApiKey && !!serverConfig.iflytekApiSecret,
+    deepseek: !!serverConfig.deepseekApiKey,
+    xai: !!serverConfig.xaiApiKey,
+    chatglm: !!serverConfig.chatglmApiKey,
+    siliconflow: !!serverConfig.siliconFlowApiKey,
+    ai302: !!serverConfig.ai302ApiKey,
+    stability: !!serverConfig.stabilityApiKey,
+  },
 };
 
 declare global {

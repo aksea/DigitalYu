@@ -65,51 +65,70 @@ export function auth(req: NextRequest, modelProvider: ModelProvider) {
     //     : serverConfig.apiKey;
 
     let systemApiKey: string | undefined;
+    let missingKeyHint = "missing API key";
 
     switch (modelProvider) {
       case ModelProvider.Stability:
         systemApiKey = serverConfig.stabilityApiKey;
+        missingKeyHint = "missing STABILITY_API_KEY in server env vars";
         break;
       case ModelProvider.GeminiPro:
         systemApiKey = serverConfig.googleApiKey;
+        missingKeyHint = "missing GOOGLE_API_KEY in server env vars";
         break;
       case ModelProvider.Claude:
         systemApiKey = serverConfig.anthropicApiKey;
+        missingKeyHint = "missing ANTHROPIC_API_KEY in server env vars";
         break;
       case ModelProvider.Doubao:
         systemApiKey = serverConfig.bytedanceApiKey;
+        missingKeyHint = "missing BYTEDANCE_API_KEY in server env vars";
         break;
       case ModelProvider.Ernie:
         systemApiKey = serverConfig.baiduApiKey;
+        missingKeyHint =
+          "missing BAIDU_API_KEY or BAIDU_SECRET_KEY in server env vars";
         break;
       case ModelProvider.Qwen:
         systemApiKey = serverConfig.alibabaApiKey;
+        missingKeyHint = "missing ALIBABA_API_KEY in server env vars";
         break;
       case ModelProvider.Moonshot:
         systemApiKey = serverConfig.moonshotApiKey;
+        missingKeyHint = "missing MOONSHOT_API_KEY in server env vars";
         break;
       case ModelProvider.Iflytek:
-        systemApiKey =
-          serverConfig.iflytekApiKey + ":" + serverConfig.iflytekApiSecret;
+        if (serverConfig.iflytekApiKey && serverConfig.iflytekApiSecret) {
+          systemApiKey =
+            serverConfig.iflytekApiKey + ":" + serverConfig.iflytekApiSecret;
+        }
+        missingKeyHint =
+          "missing IFLYTEK_API_KEY or IFLYTEK_API_SECRET in server env vars";
         break;
       case ModelProvider.DeepSeek:
         systemApiKey = serverConfig.deepseekApiKey;
+        missingKeyHint = "missing DEEPSEEK_API_KEY in server env vars";
         break;
       case ModelProvider.XAI:
         systemApiKey = serverConfig.xaiApiKey;
+        missingKeyHint = "missing XAI_API_KEY in server env vars";
         break;
       case ModelProvider.ChatGLM:
         systemApiKey = serverConfig.chatglmApiKey;
+        missingKeyHint = "missing CHATGLM_API_KEY in server env vars";
         break;
       case ModelProvider.SiliconFlow:
         systemApiKey = serverConfig.siliconFlowApiKey;
+        missingKeyHint = "missing SILICONFLOW_API_KEY in server env vars";
         break;
       case ModelProvider.GPT:
       default:
         if (req.nextUrl.pathname.includes("azure/deployments")) {
           systemApiKey = serverConfig.azureApiKey;
+          missingKeyHint = "missing AZURE_API_KEY in server env vars";
         } else {
           systemApiKey = serverConfig.apiKey;
+          missingKeyHint = "missing OPENAI_API_KEY in server env vars";
         }
     }
 
@@ -118,6 +137,10 @@ export function auth(req: NextRequest, modelProvider: ModelProvider) {
       req.headers.set("Authorization", `Bearer ${systemApiKey}`);
     } else {
       console.log("[Auth] admin did not provide an api key");
+      return {
+        error: true,
+        msg: missingKeyHint,
+      };
     }
   } else {
     console.log("[Auth] use user api key");
