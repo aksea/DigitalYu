@@ -47,6 +47,7 @@ import PluginIcon from "../icons/plugin.svg";
 import ShortcutkeyIcon from "../icons/shortcutkey.svg";
 import McpToolIcon from "../icons/tool.svg";
 import HeadphoneIcon from "../icons/headphone.svg";
+import { ContextPrompts } from "./mask";
 import {
   ChatMessage,
   createMessage,
